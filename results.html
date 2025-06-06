@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Examen | Kiwi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="./logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fc7d1c, #ff9a3c);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            color: #fc7d1c;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .exam-not-found {
+            text-align: center;
+            padding: 50px 20px;
+            color: #dc3545;
+        }
+        
+        .exam-not-found i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .stat-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .stat-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .exam-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fc7d1c;
+        }
+        
+        .exam-info h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .results-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .result-item {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .score-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .score-excellent {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        
+        .score-good {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        
+        .score-poor {
+            background: linear-gradient(135deg, #fc466b, #3f5efb);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6c757d;
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #fc7d1c;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #e56b0a;
+            transform: translateY(-2px);
+        }
+        
+        .export-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-bar"></i> Resultados del Examen</h1>
+            <p>Panel de control para docentes</p>
+        </div>
+        
+        <div class="content">
+            <div id="loadingScreen" class="loading">
+                <i class="fas fa-spinner"></i>
+                <h2>Cargando resultados...</h2>
+            </div>
+            
+            <div id="examNotFound" class="exam-not-found" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2>Examen no encontrado</h2>
+                <p>El examen que buscas no existe o ha sido eliminado.</p>
+                <p>Verifica el enlace proporcionado.</p>
+                <a href="main.html" class="btn" style="margin-top: 20px;">Volver al inicio</a>
+            </div>
+            
+            <div id="resultsContent" style="display: none;">
+                <!-- El contenido se cargará dinámicamente aquí -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/results.js"></script>
+</body>
+</html>

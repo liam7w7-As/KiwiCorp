@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Exámenes en Línea | Kiwi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="./logo.png">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #fc7d1c, #ff9a3c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .hero-content {
+            max-width: 800px;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .feature-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #fff;
+            color: #fc7d1c;
+        }
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+        .btn-secondary:hover {
+            background: #fff;
+            color: #fc7d1c;
+            transform: translateY(-2px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .question-item {
+            background: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .option-input {
+            margin-bottom: 10px;
+        }
+        .add-question-btn, .remove-question-btn {
+            background: #fc7d1c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .remove-question-btn {
+            background: #dc3545;
+        }
+        .exam-link {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #28a745;
+        }
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .firebase-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 10px 0 20px 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .firebase-status.connected {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        .firebase-status.local {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1><i class="fas fa-graduation-cap"></i> Kiwi Exams</h1>
+            
+            <!-- Indicador de estado de Firebase -->
+            <div id="firebaseStatus" class="firebase-status local">
+                <i class="fas fa-wifi"></i> Verificando conexión...
+            </div>
+            
+            <p>Crea y comparte exámenes en línea de forma rápida y sencilla. Sin registros, sin complicaciones. Perfecto para docentes que buscan evaluar a sus estudiantes de manera eficiente.</p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>Crear Exámenes</h3>
+                    <p>Diseña exámenes personalizados con múltiples preguntas y opciones</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-share-alt"></i>
+                    <h3>Compartir Enlaces</h3>
+                    <p>Genera enlaces únicos para que tus estudiantes accedan al examen</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Ver Resultados</h3>
+                    <p>Accede a los resultados y estadísticas de tus exámenes</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Tiempo Controlado</h3>
+                    <p>Establece límites de tiempo para cada pregunta</p>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="openCreateExamModal()">Crear Nuevo Examen</button>
+                <a href="index.html" class="btn btn-secondary">Tomar Examen Demo</a>
+                <button class="btn btn-secondary" onclick="openResultsModal()">Ver Resultados</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear examen -->
+    <div id="createExamModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCreateExamModal()">&times;</span>
+            <h2><i class="fas fa-plus-circle"></i> Crear Nuevo Examen</h2>
+            <form id="examForm">
+                <div class="form-group">
+                    <label for="examTitle">Título del Examen:</label>
+                    <input type="text" id="examTitle" name="examTitle" required placeholder="Ej: Examen de Matemáticas">
+                </div>
+                
+                <div class="form-group">
+                    <label for="examDescription">Descripción:</label>
+                    <textarea id="examDescription" name="examDescription" rows="3" placeholder="Descripción opcional del examen"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="timePerQuestion">Tiempo por pregunta (segundos):</label>
+                    <select id="timePerQuestion" name="timePerQuestion">
+                        <option value="15">15 segundos</option>
+                        <option value="30">30 segundos</option>
+                        <option value="60">1 minuto</option>
+                        <option value="120">2 minutos</option>
+                        <option value="300">5 minutos</option>
+                    </select>
+                </div>
+
+                <h3>Preguntas del Examen</h3>
+                <div id="questionsContainer">
+                    <!-- Las preguntas se agregarán dinámicamente aquí -->
+                </div>
+                
+                <button type="button" class="add-question-btn" onclick="addQuestion()">Agregar Pregunta</button>
+                
+                <div class="form-group" style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Crear Examen</button>
+                </div>
+            </form>
+            
+            <div id="examCreated" style="display: none;">
+                <h3><i class="fas fa-check-circle" style="color: green;"></i> ¡Examen Creado Exitosamente!</h3>
+                <div class="exam-link">
+                    <p><strong>Enlace para estudiantes:</strong></p>
+                    <input type="text" id="studentLink" readonly style="width: 70%; display: inline-block;">
+                    <button class="copy-btn" onclick="copyStudentLink()">Copiar</button>
+                </div>
+                <div class="exam-link">
+                    <p><strong>Enlace para ver resultados:</strong></p>
+                    <input type="text" id="resultsLink" readonly style="width: 70%; display: inline-block;">
+                    <button class="copy-btn" onclick="copyResultsLink()">Copiar</button>
+                </div>
+                <p style="margin-top: 15px; color: #666;"><i class="fas fa-info-circle"></i> Guarda estos enlaces. Los necesitarás para acceder a tu examen y ver los resultados.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver resultados -->
+    <div id="resultsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeResultsModal()">&times;</span>
+            <h2><i class="fas fa-chart-bar"></i> Ver Resultados de Examen</h2>
+            <div class="form-group">
+                <label for="examId">ID del Examen:</label>
+                <input type="text" id="examId" placeholder="Ingresa el ID de tu examen">
+                <button class="btn btn-primary" onclick="loadResults()" style="margin-top: 10px;">Cargar Resultados</button>
+            </div>
+            <div id="resultsContent">
+                <!-- Los resultados se mostrarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        // Cargar Firebase dinámicamente cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Importar y cargar Firebase
+            if (typeof loadFirebase === 'function') {
+                await loadFirebase();
+            } else {
+                // Si loadFirebase no está disponible, intentar cargar después de main.js
+                setTimeout(async () => {
+                    if (typeof loadFirebase === 'function') {
+                        await loadFirebase();
+                    }
+                }, 100);
+            }
+        });
+    </script>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>

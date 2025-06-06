@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen en Línea | Kiwi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="./logo.png">
+    <style>
+        .exam-header {
+            background: linear-gradient(135deg, #fc7d1c, #ff9a3c);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .exam-not-found {
+            text-align: center;
+            padding: 50px 20px;
+            color: #dc3545;
+        }
+        .exam-not-found i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .loading i {
+            font-size: 3rem;
+            color: #fc7d1c;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .exam-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fc7d1c;
+        }
+        .start_btn {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .completion-message {
+            text-align: center;
+            padding: 40px 20px;
+            background: #e8f5e8;
+            border-radius: 15px;
+            margin: 20px;
+            border: 2px solid #28a745;
+        }
+        .completion-message i {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="loading">
+        <i class="fas fa-spinner"></i>
+        <h2>Cargando examen...</h2>
+    </div>
+
+    <div id="examNotFound" class="exam-not-found" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h2>Examen no encontrado</h2>
+        <p>El examen que buscas no existe o ha sido eliminado.</p>
+        <p>Verifica el enlace proporcionado por tu docente.</p>
+        <a href="main.html" class="btn btn-primary" style="margin-top: 20px; display: inline-block; padding: 15px 30px; background: #fc7d1c; color: white; text-decoration: none; border-radius: 25px;">Volver al inicio</a>
+    </div>
+
+    <div id="examContent" style="display: none;">
+        <div class="exam-header">
+            <h1 id="examTitle">Cargando...</h1>
+            <p id="examDescription"></p>
+        </div>
+
+        <div class="exam-info">
+            <h3><i class="fas fa-info-circle"></i> Información del Examen</h3>
+            <p><strong>Total de preguntas:</strong> <span id="totalQuestions">0</span></p>
+            <p><strong>Tiempo por pregunta:</strong> <span id="timePerQuestion">0</span> segundos</p>
+            <p><strong>Instrucciones:</strong></p>
+            <ul>
+                <li>Lee cada pregunta cuidadosamente</li>
+                <li>Selecciona la respuesta que consideres correcta</li>
+                <li>Una vez seleccionada, no podrás cambiar tu respuesta</li>
+                <li>El tiempo es limitado para cada pregunta</li>
+                <li>Al finalizar verás tu puntuación</li>
+            </ul>
+        </div>
+
+        <!-- Student Name Input -->
+        <div class="student-info" style="background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #fc7d1c; text-align: center; box-shadow: 0 4px 15px rgba(252, 125, 28, 0.1);">
+            <h3 style="color: #fc7d1c; margin-bottom: 20px;"><i class="fas fa-user-graduate"></i> Información del Estudiante</h3>
+            <div style="margin: 20px 0;">
+                <label for="studentName" style="display: block; margin-bottom: 12px; font-weight: bold; color: #333; font-size: 16px;">Ingresa tu nombre completo:</label>
+                <input type="text" id="studentName" placeholder="Ej: Juan Pérez García" 
+                       style="width: 100%; max-width: 450px; padding: 15px 20px; border: 2px solid #e9ecef; border-radius: 25px; font-size: 16px; text-align: center; transition: all 0.3s ease; background: #fff;"
+                       onFocus="this.style.borderColor='#fc7d1c'; this.style.boxShadow='0 0 0 3px rgba(252, 125, 28, 0.1)'"
+                       onBlur="this.style.borderColor='#e9ecef'; this.style.boxShadow='none'"
+                       required>
+            </div>
+            <p style="color: #6c757d; font-size: 14px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fas fa-shield-alt" style="color: #28a745;"></i> Tu nombre será registrado de forma segura junto con tu calificación
+            </p>
+        </div>
+
+        <!-- start Quiz button -->
+        <div class="start_btn"><button onclick="startExam()" id="startExamBtn">Iniciar Examen</button></div>
+
+        <!-- Info Box -->
+        <div class="info_box">
+            <div class="info-title"><span>Reglas de tu Examen en Línea</span></div>
+            <div class="info-list">
+                <div class="info">1. Solo tendrás <span id="ruleTime">15 segundos</span> para responder cada pregunta.</div>
+                <div class="info">2. Una vez que seleccionas tu respuesta, no se puede deshacer.</div>
+                <div class="info">3. No puedes seleccionar ninguna opción una vez que se acaba el tiempo.</div>
+                <div class="info">4. No puedes salir del Quiz mientras está corriendo el tiempo.</div>
+                <div class="info">5. Obtendrás puntos con base en tus respuestas correctas.</div>
+            </div>
+            <div class="buttons">
+                <button class="quit" onclick="cancelExam()">Salir</button>
+                <button class="restart" onclick="continueExam()">Continuar</button>
+            </div>
+        </div>
+
+        <!-- Quiz Box -->
+        <div class="quiz_box">
+            <header>
+                <div class="title" id="quizTitle">Examen en línea</div>
+                <div class="timer">
+                    <div class="time_left_txt">Tiempo Restante</div>
+                    <div class="timer_sec">15</div>
+                </div>
+                <div class="time_line"></div>
+            </header>
+            <section>
+                <div class="que_text">
+                    <!-- Here I've inserted question from JavaScript -->
+                </div>
+                <div class="option_list">
+                    <!-- Here I've inserted options from JavaScript -->
+                </div>
+            </section>
+
+            <!-- footer of Quiz Box -->
+            <footer>
+                <div class="total_que">
+                    <!-- Here I've inserted Question Count Number from JavaScript -->
+                </div>
+                <button class="next_btn">Siguiente Pregunta</button>
+            </footer>
+        </div>
+
+        <!-- Result Box -->
+        <div class="result_box">
+            <div class="icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="complete_text">Has finalizado tu examen!</div>
+            <div class="score_text">
+                <!-- Here I've inserted Score Result from JavaScript -->
+            </div>
+            <div class="buttons">
+                <button class="restart" onclick="retakeExam()">Repetir</button>
+                <button class="quit" onclick="exitExam()">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="completionMessage" class="completion-message" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <h2>¡Examen Completado!</h2>
+        <p>Tu resultado ha sido registrado exitosamente.</p>
+        <p>Puedes cerrar esta ventana.</p>
+    </div>
+
+    <script src="js/exam.js"></script>
+</body>
+</html>
